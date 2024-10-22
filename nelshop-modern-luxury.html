@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NelShop Africa - Luxury</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        :root {
+            --gold: #D4AF37;
+            --gold-light: rgba(212, 175, 55, 0.1);
+            --background: #0c0c0c;
+            --surface: rgba(255, 255, 255, 0.05);
+            --text: #ffffff;
+            --gradient: linear-gradient(135deg, var(--gold) 0%, #FDB931 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .parallax-container {
+            height: 100vh;
+            perspective: 1000px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .parallax-bg {
+            position: absolute;
+            inset: -50px;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                        url('/api/placeholder/1920/1080') center/cover;
+            transform-style: preserve-3d;
+            transform: translateZ(-1px) scale(2);
+        }
+
+        /* Navigation latérale */
+        .side-nav {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(212, 175, 55, 0.3);
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-dot:hover {
+            background: var(--gold);
+        }
+
+        .nav-dot::before {
+            content: attr(data-label);
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--gold-light);
+            backdrop-filter: blur(10px);
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: var(--gold);
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-dot:hover::before {
+            opacity: 1;
+            right: 25px;
+        }
+
+        /* Header avec glassmorphism */
+        .glass-header {
+            background: rgba(12, 12, 12, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-content {
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 60px;
+            color: var(--gold);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Products Section */
+        .products {
+            min-height: 100vh;
+            padding: 100px 10% 50px;
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 40px;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: var(--gradient);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            perspective: 1000px;
+        }
+
+        .product-card {
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-20px) rotateX(10deg);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
+
+        .product-details {
+            padding: 30px;
+            background: linear-gradient(to top, rgba(12, 12, 12, 0.9), transparent);
+            position: relative;
+        }
+
+        .product-title {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .product-description {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .product-price {
+            font-size: 28px;
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .buy-button {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .buy-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+
+        .buy-button:hover {
+            color: var(--background);
+        }
+
+        .buy-button:hover::before {
+            left: 0;
+        }
+
+        /* Modal élégant */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(12, 12, 12, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(30px);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: var(--gradient);
+            padding: 30px;
+            color: var(--background);
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .product-card {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+            
+            .side-nav {
+                display: none;
+            }
+            
+            .products {
+                padding: 80px 5% 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="glass-header">
+        <div class="logo">NelShop Africa</div>
+    </nav>
+
+    <nav class="side-nav">
+        <div class="nav-dot" data-label="Accueil"></div>
+        <div class="nav-dot" data-label="Produits"></div>
+        <div class="nav-dot" data-label="Contact"></div>
+    </nav>
+
+    <div class="parallax-container">
+        <div class="parallax-bg"></div>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>NelShop Africa</h1>
+                <p>Découvrez l'excellence de la beauté africaine</p>
+            </div>
+        </section>
+    </div>
+
+    <section class="products">
+        <h2 class="section-title">Collection Prestige</h2>
+        <div class="products-grid">
+            <div class="product-card">
+                <img src="/api/placeholder/400/400" alt="Crème Premium" class="product-image">
+                <div class="product-details">
+                    <h3 class="product-title">Crème Royale Gold Edition</h3>
+                    <p class="product-description">Une formule exclusive enrichie en or 24 carats pour un teint royal et éclatant</p>
+                    <p class="product-price">45,000 FCFA</p>
+                    <button class="buy-button" onclick="showModal('Crème Royale Gold Edition', '45,000 FCFA')">
+                        Commander maintenant
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="/api/placeholder/400/400" alt="Sérum Premium" class="product-image">
+                <div class="product-details">
+                    <h3 class="product-title">Sérum Diamond Elixir</h3>
+                    <p class="product-description">Un sérum précieux aux extraits de diamant pour une peau parfaitement sublimée</p>
+                    <p class="product-price">52,000 FCFA</p>
+                    <button class="buy-button" onclick="showModal('Sérum Diamond Elixir', '52,000 FCFA')">
+                        Commander maintenant
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="/api/placeholder/400/400" alt="Masque Premium" class="product-image">
+                <div class="product-details">
+                    <h3 class="product-title">Masque Royal Or</h3>
+                    <p class="product-description">Alliance précieuse d'or et d'actifs rares pour une peau transformée</p>
+                    <p class="product-price">38,000 FCFA</p>
+                    <button class="buy-button" onclick="showModal('Masque Royal Or', '38,000 FCFA')">
+                        Commander maintenant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Commander</h2>
+                <p id="modalPrice"></p>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label>Nom complet</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse de livraison</label>
+                        <input type="text" id="address" required>
+                    </div>
+                    
